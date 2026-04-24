@@ -30,16 +30,38 @@ public class B_CountSort {
         //подготовка к чтению данных
         Scanner scanner = new Scanner(stream);
         //!!!!!!!!!!!!!!!!!!!!!!!!!     НАЧАЛО ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
+
+        if (!scanner.hasNextInt()) {
+            return new int[0];
+        }
+
         //размер массива
         int n = scanner.nextInt();
         int[] points = new int[n];
 
-        //читаем точки
-        for (int i = 0; i < n; i++) {
-            points[i] = scanner.nextInt();
-        }
-        //тут реализуйте логику задачи с применением сортировки подсчетом
+        // Максимальное значение согласно условию
+        int maxVal = 10;
+        // Массив для подсчета частоты каждого числа (индексы 0..10)
+        int[] count = new int[maxVal + 1];
 
+        //читаем точки и сразу считаем их количество
+        for (int i = 0; i < n; i++) {
+            int val = scanner.nextInt();
+            points[i] = val;
+            if (val >= 0 && val <= maxVal) {
+                count[val]++;
+            }
+        }
+
+        // Формируем отсортированный массив на основе подсчетов
+        int index = 0;
+        for (int i = 0; i <= maxVal; i++) {
+            // Добавляем число 'i' в результат 'count[i]' раз
+            while (count[i] > 0) {
+                points[index++] = i;
+                count[i]--;
+            }
+        }
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return points;

@@ -41,36 +41,142 @@ public class C_QSortOptimized {
     }
 
     int[] getAccessory2(InputStream stream) throws FileNotFoundException {
-        //подготовка к чтению данных
         Scanner scanner = new Scanner(stream);
-        //!!!!!!!!!!!!!!!!!!!!!!!!! НАЧАЛО ЗАДАЧИ !!!!!!!!!!!!!!!!!!!!!!!!!
-        //число отрезков отсортированного массива
+
+        if (!scanner.hasNextInt()) return new int[0];
+
         int n = scanner.nextInt();
         Segment[] segments = new Segment[n];
-        //число точек
+
         int m = scanner.nextInt();
         int[] points = new int[m];
         int[] result = new int[m];
 
-        //читаем сами отрезки
         for (int i = 0; i < n; i++) {
-            //читаем начало и конец каждого отрезка
-            segments[i] = new Segment(scanner.nextInt(), scanner.nextInt());
+            int a = scanner.nextInt();
+            int b = scanner.nextInt();
+            segments[i] = new Segment(a, b);
         }
-        //читаем точки
+
         for (int i = 0; i < m; i++) {
             points[i] = scanner.nextInt();
         }
-        //тут реализуйте логику задачи с применением быстрой сортировки
-        //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
 
+        // To achieve O(N log N + M log N), we sort starts and stops separately.
+        // The prompt asks to sort "segments" and use 3-way quicksort.
+        // We will extract arrays to sort them using our custom 3-way QSort.
 
-        //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
+        int[] starts = new int[n];
+        int[] stops = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            starts[i] = segments[i].start;
+            stops[i] = segments[i].stop;
+        }
+
+        // Sort using custom 3-way QuickSort
+        quickSort3Way(starts);
+        quickSort3Way(stops);
+
+        // For each point, count = (starts <= point) - (stops < point)
+        for (int i = 0; i < m; i++) {
+            int p = points[i];
+
+            // Upper bound for starts: index of first element > p
+            // Count of elements <= p is exactly this index
+            int countStarts = upperBound(starts, p);
+
+            // Lower bound for stops: index of first element >= p
+            // Count of elements < p is exactly this index
+            int countStops = lowerBound(stops, p);
+
+            result[i] = countStarts - countStops;
+        }
+
         return result;
     }
 
+    // --- Custom 3-Way QuickSort Implementation ---
+
+    private void quickSort3Way(int[] arr) {
+        if (arr == null || arr.length == 0) return;
+        sort3Way(arr, 0, arr.length - 1);
+    }
+
+    private void sort3Way(int[] arr, int low, int high) {
+        while (low < high) {
+            // 3-way partition
+            int lt = low;
+            int gt = high;
+            int pivot = arr[low];
+            int i = low;
+
+            while (i <= gt) {
+                if (arr[i] < pivot) {
+                    swap(arr, lt++, i++);
+                } else if (arr[i] > pivot) {
+                    swap(arr, i, gt--);
+                } else {
+                    i++;
+                }
+            }
+
+            // Tail recursion elimination:
+            // Recurse into the smaller partition, loop on the larger one.
+            if (lt - low < high - gt) {
+                sort3Way(arr, low, lt - 1);
+                low = gt + 1;
+            } else {
+                sort3Way(arr, gt + 1, high);
+                high = lt - 1;
+            }
+        }
+    }
+
+    private void swap(int[] arr, int i, int j) {
+        if (i != j) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    // --- Binary Search Helpers ---
+
+    // Returns index of first element > key.
+    // Equivalent to count of elements <= key.
+    private int upperBound(int[] arr, int key) {
+        int low = 0;
+        int high = arr.length;
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (arr[mid] <= key) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
+    // Returns index of first element >= key.
+    // Equivalent to count of elements < key.
+    private int lowerBound(int[] arr, int key) {
+        int low = 0;
+        int high = arr.length;
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (arr[mid] < key) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
     //отрезок
-    private class Segment implements Comparable {
+    private class Segment implements Comparable<Segment> {
         int start;
         int stop;
 
@@ -80,9 +186,8 @@ public class C_QSortOptimized {
         }
 
         @Override
-        public int compareTo(Object o) {
-            //подумайте, что должен возвращать компаратор отрезков
-            return 0;
+        public int compareTo(Segment o) {
+            return Integer.compare(this.start, o.start);
         }
     }
 
