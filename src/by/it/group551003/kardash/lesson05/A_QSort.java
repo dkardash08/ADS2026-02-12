@@ -2,7 +2,6 @@ package by.it.group551003.kardash.lesson05;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /*
@@ -50,96 +49,29 @@ public class A_QSort {
         //подготовка к чтению данных
         Scanner scanner = new Scanner(stream);
         //!!!!!!!!!!!!!!!!!!!!!!!!!     НАЧАЛО ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
-
-        if (!scanner.hasNextInt()) return new int[0];
-
-        //число отрезков
+        //число отрезков отсортированного массива
         int n = scanner.nextInt();
+        Segment[] segments = new Segment[n];
         //число точек
         int m = scanner.nextInt();
-
-        int[] starts = new int[n];
-        int[] stops = new int[n];
+        int[] points = new int[m];
+        int[] result = new int[m];
 
         //читаем сами отрезки
         for (int i = 0; i < n; i++) {
-            int a = scanner.nextInt();
-            int b = scanner.nextInt();
-            // Ensure start <= end just in case, though problem says ai <= bi
-            if (a <= b) {
-                starts[i] = a;
-                stops[i] = b;
-            } else {
-                starts[i] = b;
-                stops[i] = a;
-            }
+            //читаем начало и конец каждого отрезка
+            segments[i] = new Segment(scanner.nextInt(), scanner.nextInt());
         }
-
         //читаем точки
-        int[] points = new int[m];
         for (int i = 0; i < m; i++) {
             points[i] = scanner.nextInt();
         }
+        //тут реализуйте логику задачи с применением быстрой сортировки
+        //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
 
-        // Сортируем массивы начал и концов отрезков
-        Arrays.sort(starts);
-        Arrays.sort(stops);
-
-        int[] result = new int[m];
-
-        // Для каждой точки считаем количество покрывающих отрезков
-        // Количество отрезков, покрывающих точку p, равно:
-        // (количество начал <= p) - (количество концов < p)
-
-        for (int i = 0; i < m; i++) {
-            int p = points[i];
-
-            // upperBound возвращает индекс первого элемента > p.
-            // Так как массив отсортирован, это количество элементов <= p.
-            int countStarts = upperBound(starts, p);
-
-            // lowerBound возвращает индекс первого элемента >= p.
-            // Так как нам нужно количество элементов < p, это именно то, что нужно.
-            int countStops = lowerBound(stops, p);
-
-            result[i] = countStarts - countStops;
-        }
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
-    }
-
-    // Возвращает индекс первого элемента в arr, который > key.
-    // Если все элементы <= key, возвращает arr.length.
-    // Эффективно считает количество элементов <= key.
-    private int upperBound(int[] arr, int key) {
-        int low = 0;
-        int high = arr.length;
-        while (low < high) {
-            int mid = (low + high) / 2;
-            if (arr[mid] <= key) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
-    }
-
-    // Возвращает индекс первого элемента в arr, который >= key.
-    // Эффективно считает количество элементов < key.
-    private int lowerBound(int[] arr, int key) {
-        int low = 0;
-        int high = arr.length;
-        while (low < high) {
-            int mid = (low + high) / 2;
-            if (arr[mid] < key) {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-        return low;
     }
 
     //отрезок
@@ -150,15 +82,15 @@ public class A_QSort {
         Segment(int start, int stop) {
             this.start = start;
             this.stop = stop;
+            //тут вообще-то лучше доделать конструктор на случай если
+            //концы отрезков придут в обратном порядке
         }
 
         @Override
         public int compareTo(Segment o) {
-            // Сортируем по началу отрезка, при равенстве - по концу
-            if (this.start != o.start) {
-                return Integer.compare(this.start, o.start);
-            }
-            return Integer.compare(this.stop, o.stop);
+            //подумайте, что должен возвращать компаратор отрезков
+
+            return 0;
         }
     }
 
