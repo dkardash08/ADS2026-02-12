@@ -50,9 +50,56 @@ public class C_EditDist {
 
     String getDistanceEdinting(String one, String two) {
         //!!!!!!!!!!!!!!!!!!!!!!!!!     НАЧАЛО ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
+        int n = one.length();
+        int m = two.length();
 
+        // 1. Заполняем матрицу расстояний (аналогично задаче B)
+        int[][] d = new int[n + 1][m + 1];
+        for (int i = 0; i <= n; i++) d[i][0] = i;
+        for (int j = 0; j <= m; j++) d[0][j] = j;
 
-        String result = "";
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                int cost = (one.charAt(i - 1) == two.charAt(j - 1)) ? 0 : 1;
+                int insert = d[i][j - 1] + 1;
+                int delete = d[i - 1][j] + 1;
+                int replace = d[i - 1][j - 1] + cost;
+
+                int min = insert;
+                if (delete < min) min = delete;
+                if (replace < min) min = replace;
+                d[i][j] = min;
+            }
+        }
+
+        // 2. Восстановление пути (обратный ход)
+        StringBuilder sb = new StringBuilder();
+        int i = n;
+        int j = m;
+
+        while (i > 0 || j > 0) {
+            int cost = (i > 0 && j > 0 && one.charAt(i - 1) == two.charAt(j - 1)) ? 0 : 1;
+
+            // Проверяем, откуда мы пришли в d[i][j]
+            // Важно соблюдать приоритет путей для соответствия Sample Output
+            if (i > 0 && j > 0 && d[i][j] == d[i - 1][j - 1] + cost) {
+                if (cost == 0) {
+                    sb.insert(0, "#,"); // Совпадение
+                } else {
+                    sb.insert(0, "~" + two.charAt(j - 1) + ","); // Замена
+                }
+                i--;
+                j--;
+            } else if (j > 0 && d[i][j] == d[i][j - 1] + 1) {
+                sb.insert(0, "+" + two.charAt(j - 1) + ","); // Вставка
+                j--;
+            } else if (i > 0 && d[i][j] == d[i - 1][j] + 1) {
+                sb.insert(0, "-" + one.charAt(i - 1) + ","); // Удаление
+                i--;
+            }
+        }
+
+        String result = sb.toString();
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
     }

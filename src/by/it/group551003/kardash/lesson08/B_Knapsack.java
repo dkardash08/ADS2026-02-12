@@ -37,8 +37,25 @@ public class B_Knapsack {
             gold[i]=scanner.nextInt();
         }
 
+        // Создаем DP массив: dp[weight] = максимальный вес для вместимости weight
+        // Используем 1D массив для оптимизации памяти
+        int[] dp = new int[w + 1];
 
-        int result = 0;
+        // Инициализируем dp[0] = 0 (пустой рюкзак)
+        dp[0] = 0;
+
+        // Для каждого слитка
+        for (int i = 0; i < n; i++) {
+            // Идем от большей вместимости к меньшей, чтобы каждый слиток использовать только один раз
+            for (int capacity = w; capacity >= gold[i]; capacity--) {
+                // Пробуем положить текущий слиток или не класть его
+                // dp[capacity] - не кладем слиток
+                // dp[capacity - gold[i]] + gold[i] - кладем слиток
+                dp[capacity] = Math.max(dp[capacity], dp[capacity - gold[i]] + gold[i]);
+            }
+        }
+
+        int result = dp[w];  // Максимальный вес для полной вместимости
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
     }
