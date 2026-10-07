@@ -7,11 +7,13 @@ import java.util.NoSuchElementException;
 
 public class MyLinkedList<E> implements Deque<E> {
 
+    // Внутренний класс узла двусвязного списка
     private static class Node<E> {
         E item;
         Node<E> prev;
         Node<E> next;
 
+        // Конструктор узла: инициализирует значение элемента
         Node(E item) {
             this.item = item;
         }
@@ -21,6 +23,7 @@ public class MyLinkedList<E> implements Deque<E> {
     private Node<E> last = null;
     private int size = 0;
 
+    // Удаляет указанный узел из списка, корректно обновляя связи соседей и уменьшая size
     private E unlink(Node<E> node) {
         E item = node.item;
         if (node.prev == null) {
@@ -42,6 +45,7 @@ public class MyLinkedList<E> implements Deque<E> {
 
     // ========== обязательные методы ==========
 
+    // Возвращает строковое представление элементов списка в формате [elem1, elem2]
     @Override
     public String toString() {
         String result = "[";
@@ -56,12 +60,14 @@ public class MyLinkedList<E> implements Deque<E> {
         return result + "]";
     }
 
+    // Добавляет элемент в конец списка (делегирование методу addLast)
     @Override
     public boolean add(E element) {
         addLast(element);
         return true;
     }
 
+    // Удаляет элемент по заданному индексу, оптимизируя поиск (с начала или с конца списка)
     public E remove(int index) {
         if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
         Node<E> current;
@@ -79,6 +85,7 @@ public class MyLinkedList<E> implements Deque<E> {
         return unlink(current);
     }
 
+    // Удаляет первое вхождение указанного элемента, возвращая true при успешном удалении
     @Override
     public boolean remove(Object element) {
         Node<E> current = first;
@@ -92,11 +99,13 @@ public class MyLinkedList<E> implements Deque<E> {
         return false;
     }
 
+    // Возвращает текущее количество элементов в списке
     @Override
     public int size() {
         return size;
     }
 
+    // Добавляет элемент в начало списка, обновляя ссылки first и prev
     @Override
     public void addFirst(E element) {
         Node<E> node = new Node<>(element);
@@ -110,6 +119,7 @@ public class MyLinkedList<E> implements Deque<E> {
         size++;
     }
 
+    // Добавляет элемент в конец списка, обновляя ссылки last и next
     @Override
     public void addLast(E element) {
         Node<E> node = new Node<>(element);
@@ -123,42 +133,45 @@ public class MyLinkedList<E> implements Deque<E> {
         size++;
     }
 
+    // Возвращает первый элемент без удаления (делегирование методу getFirst)
     @Override
     public E element() {
         return getFirst();
     }
 
+    // Возвращает первый элемент, бросает исключение, если список пуст
     @Override
     public E getFirst() {
         if (first == null) throw new NoSuchElementException();
         return first.item;
     }
 
+    // Возвращает последний элемент, бросает исключение, если список пуст
     @Override
     public E getLast() {
         if (last == null) throw new NoSuchElementException();
         return last.item;
     }
 
+    // Извлекает и удаляет первый элемент (делегирование методу pollFirst)
     @Override
     public E poll() {
         return pollFirst();
     }
 
+    // Извлекает и удаляет первый элемент, возвращает null, если список пуст
     @Override
     public E pollFirst() {
         if (first == null) return null;
         return unlink(first);
     }
 
+    // Извлекает и удаляет последний элемент, возвращает null, если список пуст
     @Override
     public E pollLast() {
         if (last == null) return null;
         return unlink(last);
     }
-
-    // ========== заглушки (требуются только для компиляции Deque) ==========
-
     @Override public boolean offerFirst(E e) { throw new UnsupportedOperationException(); }
     @Override public boolean offerLast(E e) { throw new UnsupportedOperationException(); }
     @Override public E removeFirst() { throw new UnsupportedOperationException(); }
