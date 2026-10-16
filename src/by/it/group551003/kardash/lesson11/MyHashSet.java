@@ -19,16 +19,19 @@ public class MyHashSet<E> implements Set<E> {
     private Node<E>[] table;
     private int size = 0;
 
+    // Конструктор: создаёт хэш-таблицу из 16 корзин
     @SuppressWarnings("unchecked")
     public MyHashSet() {
         table = (Node<E>[]) new Node[16];
     }
 
+    // Вычисляет индекс корзины по хэш-коду объекта
     private int indexFor(Object o, int length) {
         int h = (o == null) ? 0 : o.hashCode();
         return (h & 0x7fffffff) % length;
     }
 
+    // Увеличивает таблицу в 2 раза и перераспределяет элементы по новым корзинам
     @SuppressWarnings("unchecked")
     private void resize() {
         Node<E>[] newTable = (Node<E>[]) new Node[table.length * 2];
@@ -47,11 +50,13 @@ public class MyHashSet<E> implements Set<E> {
 
     // ========== обязательные методы ==========
 
+    // Возвращает текущее количество элементов во множестве
     @Override
     public int size() {
         return size;
     }
 
+    // Очищает множество: обнуляет все корзины и сбрасывает счётчик
     @Override
     public void clear() {
         for (int i = 0; i < table.length; i++) {
@@ -60,11 +65,13 @@ public class MyHashSet<E> implements Set<E> {
         size = 0;
     }
 
+    // Проверяет, пусто ли множество
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    // Добавляет элемент, если его ещё нет; при заполнении 75% вызывает resize()
     @Override
     public boolean add(E element) {
         if (contains(element)) return false;
@@ -75,6 +82,7 @@ public class MyHashSet<E> implements Set<E> {
         return true;
     }
 
+    // Удаляет элемент из цепочки коллизий, если он найден
     @Override
     public boolean remove(Object o) {
         int index = indexFor(o, table.length);
@@ -96,6 +104,7 @@ public class MyHashSet<E> implements Set<E> {
         return false;
     }
 
+    // Проверяет, содержится ли элемент в множестве (перебором цепочки)
     @Override
     public boolean contains(Object o) {
         Node<E> current = table[indexFor(o, table.length)];
@@ -108,6 +117,7 @@ public class MyHashSet<E> implements Set<E> {
         return false;
     }
 
+    // Формирует строковое представление множества, обходя все корзины
     @Override
     public String toString() {
         String result = "[";

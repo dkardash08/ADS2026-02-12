@@ -23,20 +23,24 @@ public class MyLinkedHashSet<E> implements Set<E> {
     private Node<E> tail = null;  // самый поздний добавленный элемент
     private int size = 0;
 
+    // Конструктор: инициализирует хэш-таблицу размером 16
     @SuppressWarnings("unchecked")
     public MyLinkedHashSet() {
         table = (Node<E>[]) new Node[16];
     }
 
+    // Вычисляет индекс корзины на основе хэш-кода объекта
     private int indexFor(Object o, int length) {
         int h = (o == null) ? 0 : o.hashCode();
         return (h & 0x7fffffff) % length;
     }
 
+    // Безопасно сравнивает два объекта, учитывая возможность null
     private boolean same(Object o, E item) {
         return o == null ? item == null : o.equals(item);
     }
 
+    // Увеличивает таблицу в 2 раза и перераспределяет элементы по новым корзинам
     @SuppressWarnings("unchecked")
     private void resize() {
         Node<E>[] newTable = (Node<E>[]) new Node[table.length * 2];
@@ -55,6 +59,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
 
     // ========== обязательные методы ==========
 
+    // Возвращает строковое представление элементов в порядке их добавления
     @Override
     public String toString() {
         String result = "[";
@@ -69,11 +74,13 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return result + "]";
     }
 
+    // Возвращает текущее количество элементов во множестве
     @Override
     public int size() {
         return size;
     }
 
+    // Полностью очищает множество, сбрасывая таблицу, head, tail и size
     @Override
     public void clear() {
         for (int i = 0; i < table.length; i++) {
@@ -84,11 +91,13 @@ public class MyLinkedHashSet<E> implements Set<E> {
         size = 0;
     }
 
+    // Проверяет, является ли множество пустым
     @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
+    // Добавляет элемент в хэш-таблицу и в конец списка порядка добавления
     @Override
     public boolean add(E element) {
         if (contains(element)) return false;
@@ -109,6 +118,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return true;
     }
 
+    // Удаляет элемент из хэш-цепочки и из списка порядка добавления
     @Override
     public boolean remove(Object o) {
         int index = indexFor(o, table.length);
@@ -142,6 +152,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return false;
     }
 
+    // Проверяет наличие элемента в множестве через хэш-поиск
     @Override
     public boolean contains(Object o) {
         Node<E> current = table[indexFor(o, table.length)];
@@ -154,6 +165,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return false;
     }
 
+    // Проверяет, содержатся ли все элементы коллекции c во множестве
     @Override
     public boolean containsAll(Collection<?> c) {
         for (Object o : c) {
@@ -164,6 +176,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return true;
     }
 
+    // Добавляет все элементы из коллекции c во множество
     @Override
     public boolean addAll(Collection<? extends E> c) {
         boolean changed = false;
@@ -175,6 +188,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return changed;
     }
 
+    // Удаляет из множества все элементы, присутствующие в коллекции c
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean changed = false;
@@ -190,6 +204,7 @@ public class MyLinkedHashSet<E> implements Set<E> {
         return changed;
     }
 
+    // Оставляет во множестве только те элементы, которые есть в коллекции c
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean changed = false;
